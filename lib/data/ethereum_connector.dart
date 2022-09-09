@@ -190,6 +190,7 @@ class EthereumConnector implements WalletConnector {
   String get coinName => 'Eth';
 
   final _ethereum = Web3Client(
-      'https://polygon-mumbai.g.alchemy.com/v2/YLZl8yIoPQo0T1b7sFLHsERXuqbCflDX',
-      Client());
+    'https://polygon-mumbai.g.alchemy.com/v2/YLZl8yIoPQo0T1b7sFLHsERXuqbCflDX',
+    Client(),
+  );
 }
