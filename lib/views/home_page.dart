@@ -1,7 +1,13 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:wallet_test/data/ethereum_connector.dart';
 import 'package:wallet_test/data/repo/wallet_connector.dart';
 import 'package:wallet_test/views/wallet.dart';
+import 'package:wallet_test/views/wallet_created.dart';
+import 'package:web3dart/web3dart.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:web3dart/crypto.dart';
 
 enum ConnectionState {
   disconnected,
@@ -19,6 +25,11 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  late Credentials cred;
+  late EthereumAddress address;
+  EtherAmount? balance;
+  // late final SharedPreferences _prefs;
+  final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
   WalletConnector connector = EthereumConnector();
   ConnectionState _state = ConnectionState.disconnected;
 
@@ -61,6 +72,12 @@ class _HomePageState extends State<HomePage> {
                   onPressed: _transactionStateToAction(state: _state),
                   child: Text(
                     _transactionStateToString(state: _state),
+                  ),
+                ),
+                ElevatedButton(
+                  onPressed: createWallet,
+                  child: Text(
+                    "Create Wallet",
                   ),
                 ),
               ],
@@ -120,5 +137,46 @@ class _HomePageState extends State<HomePage> {
         builder: (context) => WalletPage(connector: connector),
       ),
     );
+  }
+
+  void _openCreatedWalletPage() {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => WalletCreatedPage(connector: connector),
+      ),
+    );
+  }
+
+  void createWallet() async {
+    cred = generateRandomAccount();
+    address = await cred.extractAddress();
+    cred.extractAddress();
+    print(address);
+    _openCreatedWalletPage();
+  }
+
+  //GENERATE RANDOM WALLET
+  Credentials generateRandomAccount() {
+    // print(Random.secure());
+    final cred = EthPrivateKey.createRandom(Random.secure());
+
+    final key = bytesToHex(
+      cred.privateKey,
+      padToEvenLength: true,
+    );
+
+    setPrivateKey(key);
+
+    return cred;
+  }
+
+  void setPrivateKey(key) async {
+    final SharedPreferences prefs = await _prefs;
+    prefs.setString('privateKey', key);
+  }
+
+  void getPrivateKey(key) async {
+    final SharedPreferences prefs = await _prefs;
+    prefs.getString('privateKey') ?? '';
   }
 }
