@@ -41,6 +41,7 @@ dependencies:
   # applications to mobile wallets with QR code scanning or deep linking.
   # A user can interact securely with any Dapp from their mobile phone.
   walletconnect_dart: ^0.0.11
+  walletconnect_secure_storage: ^1.0.0
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
